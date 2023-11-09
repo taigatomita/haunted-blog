@@ -10,7 +10,7 @@ class BlogsController < ApplicationController
 
   def show
     blog = Blog.find(params[:id])
-    @blog = user_signed_in? && blog.user_id == current_user.id ? blog : Blog.published.find(params[:id])
+    @blog = blog.owned_by?(current_user) ? blog : Blog.published.find(params[:id])
   end
 
   def new
@@ -50,10 +50,8 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    if current_user.premium?
-      params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
-    else
-      params.require(:blog).permit(:title, :content, :secret)
-    end
+    permission_list = %i[title content secret]
+    permission_list.push(:random_eyecatch) if current_user.premium?
+    params.require(:blog).permit(permission_list)
   end
 end
