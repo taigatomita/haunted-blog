@@ -7,6 +7,8 @@ class Blog < ApplicationRecord
 
   validates :title, :content, presence: true
 
+  scope :owned_by, ->(current_user) { where("user_id = #{current_user.id} or secret = FALSE") }
+
   scope :published, -> { where('secret = FALSE') }
 
   scope :search, lambda { |term|
