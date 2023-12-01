@@ -9,7 +9,7 @@ class Blog < ApplicationRecord
 
   scope :visible_to_user, ->(current_user) { current_user ? owned_by(current_user).or(published) : published }
 
-  scope :owned_by, ->(current_user) { where(user_id: current_user.id) if current_user }
+  scope :owned_by, ->(current_user) { current_user ? where(user_id: current_user.id) : none }
 
   scope :published, -> { where('secret = FALSE') }
 
