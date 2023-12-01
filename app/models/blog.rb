@@ -7,7 +7,9 @@ class Blog < ApplicationRecord
 
   validates :title, :content, presence: true
 
-  scope :owned_by, ->(current_user) { where("user_id = #{current_user.id} or secret = FALSE") }
+  scope :visible_to_user, ->(current_user) { current_user ? owned_by(current_user).or(published) : published }
+
+  scope :owned_by, ->(current_user) { where(user_id: current_user.id) if current_user }
 
   scope :published, -> { where('secret = FALSE') }
 
